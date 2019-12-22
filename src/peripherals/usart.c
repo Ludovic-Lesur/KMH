@@ -17,7 +17,7 @@
 /*** USART local macros ***/
 
 // Baud rate.
-#define BAUD_RATE 				9600
+#define USART_BAUD_RATE 		9600
 // Buffer sizes.
 #define USART_TX_BUFFER_SIZE	32
 #define USART_RX_BUFFER_SIZE	32
@@ -62,7 +62,7 @@ void USART1_IRQHandler(void) {
 	/* RX */
 	if (((USART1 -> ISR) & (0b1 << 5)) != 0) { // RXNE='1'.
 		// Get and store new byte into RX buffer.
-		unsigned char rx_byte = USART1 -> RDR;
+		//unsigned char rx_byte = USART1 -> RDR;
 	}
 }
 
@@ -83,10 +83,23 @@ void USART1_FillTxBuffer(unsigned char new_tx_byte) {
  * @param n:	The word to converts.
  * @return:		The results of conversion.
  */
-unsigned char CharToASCII(unsigned char n) {
-	unsigned char result = 0;
-	if (n <= 15) {
-		result = (n <= 9 ? (char) (n + 48) : (char) (n + 55));
+char USARTx_HexaToAscii(unsigned char hexa_value) {
+	char hexa_ascii = 0;
+	if (hexa_value <= 15) {
+		hexa_ascii = (hexa_value <= 9 ? (char) (hexa_value + '0') : (char) (hexa_value + ('A' - 10)));
+	}
+	return hexa_ascii;
+}
+
+/* COMPUTE A POWER A 10.
+ * @param power:	The desired power.
+ * @return result:	Result of computation.
+ */
+unsigned int USARTx_Pow10(unsigned char power) {
+	unsigned int result = 0;
+	unsigned int pow10_buf[10] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
+	if (power <= 9) {
+		result = pow10_buf[power];
 	}
 	return result;
 }
@@ -116,7 +129,7 @@ void USART1_Init(void) {
 	USART1 -> CR2 = 0;
 	USART1 -> CR3 = 0;
 	// Baud rate.
-	USART1 -> BRR = (RCC_PCLK2_KHZ * 1000) / (BAUD_RATE); // USART clock = PCLK2 (APB2 peripheral).
+	USART1 -> BRR = (RCC_GetPclk2Khz() * 1000) / (USART_BAUD_RATE); // USART1 is clocked by PCLK2.
 	// Enable transmitter and receiver.
 	USART1 -> CR1 |= (0b1 << 3); // TE='1'.
 	USART1 -> CR1 |= (0b1 << 2); // RE='1'.
@@ -127,46 +140,95 @@ void USART1_Init(void) {
 	NVIC_EnableInterrupt(IT_USART1);
 }
 
-/* SEND A BYTE THROUGH USART.
- * @param byte:			The byte to send.
- * @param format:		Display format (should be 'Binary', 'Hexadecimal', 'Decimal' or 'ASCII').
+/* SEND A VALUE THROUGH USART.
+ * @param tx_value:		Value to print.
+ * @param format:		Display format (see USART_Format enumeration in usart.h).
+ * @param print_prexix	Print '0b' or '0x' prefix if non zero.
  * @return: 			None.
  */
-void USART1_SendByte(unsigned char tx_byte, USART_Format format) {
+void USART1_SendValue(unsigned int tx_value, USART_Format format, unsigned char print_prefix) {
+
+	/* Disable interrupt */
 	NVIC_DisableInterrupt(IT_USART1);
+
+	/* Local variables */
+	unsigned char first_non_zero_found = 0;
+	unsigned int idx;
+	unsigned char current_value = 0;
+	unsigned int current_power = 0;
+	unsigned int previous_decade = 0;
+
+	/* Fill TX buffer according to format */
 	switch (format) {
-	unsigned int i;
-	unsigned char hundreds, tens, units;
 	case USART_FORMAT_BINARY:
-		for (i=7 ; i>=0 ; i--) {
-			if (tx_byte & (1 << i)) {
-				USART1_FillTxBuffer(0x31); // = '1'.
+		if (print_prefix != 0) {
+			// Print "0b" prefix.
+			USART1_FillTxBuffer('0');
+			USART1_FillTxBuffer('b');
+		}
+		// Maximum 32 bits.
+		for (idx=31 ; idx>=0 ; idx--) {
+			if (tx_value & (0b1 << idx)) {
+				USART1_FillTxBuffer('1'); // = '1'.
+				first_non_zero_found = 1;
 			}
 			else {
-				USART1_FillTxBuffer(0x30); // = '0'.
+				if ((first_non_zero_found != 0) || (idx == 0)) {
+					USART1_FillTxBuffer('0'); // = '0'.
+				}
+			}
+			if (idx == 0) {
+				break;
 			}
 		}
 		break;
 	case USART_FORMAT_HEXADECIMAL:
-		USART1_FillTxBuffer(CharToASCII((tx_byte & 0xF0) >> 4));
-		USART1_FillTxBuffer(CharToASCII(tx_byte & 0x0F));
+		if (print_prefix != 0) {
+			// Print "0x" prefix.
+			USART1_FillTxBuffer('0');
+			USART1_FillTxBuffer('x');
+		}
+		// Maximum 4 bytes.
+		for (idx=3 ; idx>=0 ; idx--) {
+			current_value = (tx_value & (0xFF << (8*idx))) >> (8*idx);
+			if (current_value != 0) {
+				first_non_zero_found = 1;
+			}
+			if ((first_non_zero_found != 0) || (idx == 0)) {
+				USART1_FillTxBuffer(USARTx_HexaToAscii((current_value & 0xF0) >> 4));
+				USART1_FillTxBuffer(USARTx_HexaToAscii(current_value & 0x0F));
+			}
+			if (idx == 0) {
+				break;
+			}
+		}
 		break;
 	case USART_FORMAT_DECIMAL:
-		// Hundreds.
-		hundreds = (tx_byte/100);
-		USART1_FillTxBuffer(hundreds+48); // 48 = ASCII offset to reach character '0'.
-		// Tens.
-		tens = (tx_byte-hundreds*100)/10;
-		USART1_FillTxBuffer(tens+48); // 48 = ASCII offset to reach character '0'.
-		// Units.
-		units = (tx_byte-hundreds*100-tens*10);
-		USART1_FillTxBuffer(units+48); // 48 = ASCII offset to reach character '0'.
+		// Maximum 10 digits.
+		for (idx=9 ; idx>=0 ; idx--) {
+			current_power = USARTx_Pow10(idx);
+			current_value = (tx_value - previous_decade) / current_power;
+			previous_decade += current_value * current_power;
+			if (current_value != 0) {
+				first_non_zero_found = 1;
+			}
+			if ((first_non_zero_found != 0) || (idx == 0)) {
+				USART1_FillTxBuffer(current_value + '0');
+			}
+			if (idx == 0) {
+				break;
+			}
+		}
 		break;
 	case USART_FORMAT_ASCII:
 		// Raw byte.
-		USART1_FillTxBuffer(tx_byte);
+		if (tx_value <= 0xFF) {
+			USART1_FillTxBuffer(tx_value);
+		}
 		break;
 	}
-	USART1 -> CR1 |= (0b1 << 7); // TXEIE = '1'.
+
+	/* Enable interrupt */
+	USART1 -> CR1 |= (0b1 << 7); // (TXEIE = '1').
 	NVIC_EnableInterrupt(IT_USART1);
 }

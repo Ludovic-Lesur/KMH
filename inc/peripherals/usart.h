@@ -21,6 +21,6 @@ typedef enum {
 /*** USART functions ***/
 
 void USART1_Init(void);
-void USART1_SendByte(unsigned char tx_byte, USART_Format format);
+void USART1_SendValue(unsigned int tx_value, USART_Format format, unsigned char print_prefix);
 
 #endif /* _USART_H */

@@ -5,12 +5,16 @@
  *      Author: Ludovic
  */
 
+// Peripherals.
+#include "flash.h"
 #include "gpio.h"
-#include "gpio_reg.h"
+#include "lptim.h"
 #include "mapping.h"
 #include "rcc.h"
-#include "rcc_reg.h"
-#include "usart.H"
+#include "tim.h"
+#include "usart.h"
+// Components.
+#include "led.h"
 
 /* MAIN FUNCTION.
  * @param: 	None.
@@ -18,36 +22,30 @@
  */
 int main(void) {
 
-	/* Init clock */
+	/* Init clock and memory */
 	RCC_Init();
+	FLASH_Init();
 
-	/* Init RGB LED pins */
-	GPIO_Init();
-	GPIO_Configure(&GPIO_LED_RED, GPIO_MODE_OUTPUT, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_LED_GREEN, GPIO_MODE_OUTPUT, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_LED_BLUE, GPIO_MODE_OUTPUT, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+	/* Init timers */
+	TIM2_Init();
+	TIM3_Init();
+	TIM2_Start();
+	TIM3_Start();
+	LPTIM1_Init();
 
 	/* Init peripherals */
+	GPIO_Init();
 	USART1_Init();
 
+	/* Init components */
+	LED_Init();
+
 	/* Main loop */
-	unsigned int i = 0;
-	unsigned int j = 0;
 	while(1) {
-		GPIOB -> ODR = 0b011;
-		for (i=0 ; i<500000 ; i++);
-		GPIOB -> ODR = 0b001;
-		for (i=0 ; i<500000 ; i++);
-		GPIOB -> ODR = 0b101;
-		for (i=0 ; i<500000 ; i++);
-		GPIOB -> ODR = 0b100;
-		for (i=0 ; i<500000 ; i++);
-		GPIOB -> ODR = 0b110;
-		for (i=0 ; i<500000 ; i++);
-		GPIOB -> ODR = 0b010;
-		for (i=0 ; i<500000 ; i++);
-		USART1_SendByte(j, USART_FORMAT_DECIMAL);
-		j++;
+		LED_SetColor(LED_GREEN);
+		LPTIM1_DelayMilliseconds(1000);
+		LED_SetColor(LED_OFF);
+		LPTIM1_DelayMilliseconds(1000);
 	}
 
 	return (0);
