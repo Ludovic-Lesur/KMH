@@ -11,10 +11,14 @@
 #include "lptim.h"
 #include "mapping.h"
 #include "rcc.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 // Components.
 #include "led.h"
+#include "cc1260.h"
+#include "cc1260_config.h"
+#include "cc1260_reg.h"
 
 /* MAIN FUNCTION.
  * @param: 	None.
@@ -36,16 +40,25 @@ int main(void) {
 	/* Init peripherals */
 	GPIO_Init();
 	USART1_Init();
+	SPI3_Init();
 
 	/* Init components */
 	LED_Init();
+	CC1260_Init();
+
+	/* RX I/Q test */
+	SPI3_PowerOn();
+	CC1260_Unreset();
+	CC1260_SetConfig(CC1260_OPTIMUM_SETTING_RX, CC1260_OPTIMUM_SETTING_RX_SIZE);
+	CC1260_SetFrequency(868130000);
+	CC1260_StartRxIq();
 
 	/* Main loop */
 	while(1) {
-		LED_SetColor(LED_GREEN);
-		LPTIM1_DelayMilliseconds(1000);
-		LED_SetColor(LED_OFF);
-		LPTIM1_DelayMilliseconds(1000);
+		// Print I/Q data (mapped on PORTD).
+		USART1_SendValue(((GPIOD -> IDR) & 0xFF), USART_FORMAT_BINARY, 1);
+		USART1_SendValue('\n', USART_FORMAT_ASCII, 0);
+		LPTIM1_DelayMilliseconds(200);
 	}
 
 	return (0);
