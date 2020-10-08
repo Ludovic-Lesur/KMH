@@ -2,7 +2,7 @@
  * tim_reg.h
  *
  *  Created on: 21 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef TIM_REG_H

@@ -2,7 +2,7 @@
  * cc1260_config.h
  *
  *  Created on: 23 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef CC1260_CONFIG_H

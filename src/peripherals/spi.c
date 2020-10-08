@@ -25,35 +25,28 @@
  * @return:	None.
  */
 void SPI3_Init(void) {
-
-	/* Enable peripheral clock */
+	// Enable peripheral clock.
 	RCC -> APB1ENR |= (0b1 << 15); // SPI3EN='1'.
-
-	/* Configure power enable pin */
+	// Configure power enable pin.
 	GPIO_Configure(&GPIO_RF_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Write(&GPIO_RF_POWER_ENABLE, 0);
-
-	/* Configure SCK, MISO and MOSI (first as high impedance) */
+	// Configure SCK, MISO and MOSI (first as high impedance).
 	GPIO_Configure(&GPIO_SPI3_SCK, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_SPI3_MOSI, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_SPI3_MISO, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Configure CS pins (first as output low) */
+	// Configure CS pins (first as output low).
 	GPIO_Configure(&GPIO_CC1260_CS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Write(&GPIO_CC1260_CS, 0);
-
-	/* Configure peripheral */
+	// Configure peripheral.
 	SPI3 -> CR1 &= 0xFFFF0000; // Disable peripheral before configuration (SPE='0').
 	SPI3 -> CR1 |= (0b010 << 3); // Baud rate = PCLK1 / 8 = 1.2MHz.
 	SPI3 -> CR1 &= ~(0b11 << 0); // CPOL='0' and CPHA='0'.
 	SPI3 -> CR1 |= (0b1 << 2); // Master mode (MSTR='1').
-
 	SPI3 -> CR2 &= 0xFFFF8000;
 	SPI3 -> CR2 |= (0b0111 << 8); // 8-bits format (DS='0111').
 	SPI3 -> CR2 |= (0b1 << 2); // Enable output (SSOE='1').
 	SPI3 -> CR2 |= (0b1 << 12); // RXNE set as soon as 8-bits has been received (FRXTH='1').
-
-	/* Enable peripheral */
+	// Enable peripheral.
 	SPI3 -> CR1 |= (0b1 << 6); // SPE='1'.
 }
 
@@ -62,12 +55,10 @@ void SPI3_Init(void) {
  * @return:	None.
  */
 void SPI3_Enable(void) {
-
-	/* Enable SPI3 peripheral */
+	// Enable SPI3 peripheral.
 	RCC -> APB1ENR |= (0b1 << 15); // SPI3EN='1'.
 	SPI3 -> CR1 |= (0b1 << 6);
-
-	/* Configure GPIOs */
+	// Configure GPIOs.
 	GPIO_Configure(&GPIO_RF_POWER_ENABLE, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_CC1260_CS, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 }
@@ -77,12 +68,10 @@ void SPI3_Enable(void) {
  * @return:	None.
  */
 void SPI3_Disable(void) {
-
-	/* Disable SPI3 peripheral */
+	// Disable SPI3 peripheral.
 	SPI3 -> CR1 &= ~(0b1 << 6);
 	RCC -> APB1ENR &= ~(0b1 << 15); // SPI3EN='0'.
-
-	/* Disable GPIOs */
+	// Disable GPIOs.
 	GPIO_Configure(&GPIO_RF_POWER_ENABLE, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_CC1260_CS, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 }
@@ -92,13 +81,11 @@ void SPI3_Disable(void) {
  * @return:	None.
  */
 void SPI3_PowerOn(void) {
-
-	/* Enable GPIOs */
-	GPIO_Configure(&GPIO_SPI3_SCK, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_SPI3_MOSI, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	GPIO_Configure(&GPIO_SPI3_MISO, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Switch CC1260 on */
+	// Enable GPIOs.
+	GPIO_Configure(&GPIO_SPI3_SCK, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_HIGH, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_SPI3_MOSI, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_HIGH, GPIO_PULL_NONE);
+	GPIO_Configure(&GPIO_SPI3_MISO, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_HIGH, GPIO_PULL_NONE);
+	// Switch CC1260 on.
 	GPIO_Write(&GPIO_RF_POWER_ENABLE, 1);
 	GPIO_Write(&GPIO_CC1260_CS, 1); // CS high (idle state).
 	LPTIM1_DelayMilliseconds(100);
@@ -109,17 +96,14 @@ void SPI3_PowerOn(void) {
  * @return:	None.
  */
 void SPI3_PowerOff(void) {
-
-	/* Switch SX1232 off */
+	// Switch CC1260 off.
 	GPIO_Write(&GPIO_RF_POWER_ENABLE, 0);
 	GPIO_Write(&GPIO_CC1260_CS, 0); // CS low (to avoid powering slaves via SPI bus).
-
-	/* Disable SPI alternate function */
+	// Disable SPI alternate function.
 	GPIO_Configure(&GPIO_SPI3_SCK, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_SPI3_MOSI, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_SPI3_MISO, GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Delay required if another cycle is requested by applicative layer */
+	// Delay required if another cycle is requested by applicative layer.
 	LPTIM1_DelayMilliseconds(100);
 }
 

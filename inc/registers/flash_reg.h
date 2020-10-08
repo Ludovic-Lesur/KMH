@@ -2,7 +2,7 @@
  * flash_reg.h
  *
  *  Created on: 22 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef FLASH_REG_H

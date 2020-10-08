@@ -23,12 +23,10 @@
  * @return:	None.
  */
 void LPTIM1_Init(void) {
-
-	/* Select peripheral clock */
+	// Select peripheral clock.
 	RCC -> DCKCFGR2 &= ~(0b11 << 24); // LPTIMSEL='00' (PCLK1 clock selected).
 	RCC -> APB1ENR |= (0b1 << 9); // LPTIM1EN='1'.
-
-	/* Configure peripheral */
+	// Configure peripheral.
 	LPTIM1 -> CR &= ~(0b1 << 0); // Disable LPTIM1 (ENABLE='0'), needed to write CFGR.
 	LPTIM1 -> CFGR |= (0b1 << 19); // Enable timeout.
 	LPTIM1 -> CNT &= 0xFFFF0000; // Reset counter.
@@ -39,11 +37,9 @@ void LPTIM1_Init(void) {
 		// Wait for ARROK='1' or timeout.
 		if (TIM2_GetSeconds() > (loop_start_time + LPTIM_TIMEOUT_SECONDS)) break;
 	}
-
-	/* Clear all flags */
+	// Clear all flags.
 	LPTIM1 -> ICR |= (0b1111111 << 0);
-
-	/* Disable peripheral by default */
+	// Disable peripheral by default.
 	LPTIM1 -> CR &= ~(0b1 << 0); // Disable LPTIM1 (ENABLE='0').
 }
 
@@ -52,8 +48,7 @@ void LPTIM1_Init(void) {
  * @return:	None.
  */
 void LPTIM1_Enable(void) {
-
-	/* Enable timer clock */
+	// Enable timer clock.
 	RCC -> APB1ENR |= (0b1 << 9); // LPTIM1EN='1'.
 }
 
@@ -62,8 +57,7 @@ void LPTIM1_Enable(void) {
  * @return:	None.
  */
 void LPTIM1_Disable(void) {
-
-	/* Disable timer */
+	// Disable timer.
 	LPTIM1 -> CR &= ~(0b1 << 0); // Disable LPTIM1 (ENABLE='0').
 	LPTIM1 -> CNT = 0;
 	RCC -> APB1ENR &= ~(0b1 << 9); // LPTIM1EN='0'.
@@ -74,11 +68,9 @@ void LPTIM1_Disable(void) {
  * @return:			None.
  */
 void LPTIM1_DelayMilliseconds(unsigned int delay_ms) {
-
-	/* Enable timer */
+	// Enable timer.
 	LPTIM1 -> CR |= (0b1 << 0); // Enable LPTIM1 (ENABLE='1').
-
-	/* Make as many overflows as required */
+	// Make as many overflows as required.
 	unsigned int ms_count = 0;
 	unsigned int loop_start_time = 0;
 	unsigned char lptim_default = 0;
@@ -100,7 +92,6 @@ void LPTIM1_DelayMilliseconds(unsigned int delay_ms) {
 			break;
 		}
 	}
-
-	/* Disable timer */
+	// Disable timer.
 	LPTIM1 -> CR &= ~(0b1 << 0); // Disable LPTIM1 (ENABLE='0').
 }

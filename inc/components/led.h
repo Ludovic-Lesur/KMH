@@ -2,7 +2,7 @@
  * led.h
  *
  *  Created on: 22 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef LED_H

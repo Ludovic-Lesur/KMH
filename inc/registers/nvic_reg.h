@@ -2,7 +2,7 @@
  * nvic_reg.h
  *
  *  Created on: 7 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef NVIC_REG_H

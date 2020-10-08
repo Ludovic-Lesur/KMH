@@ -2,7 +2,7 @@
  * mapping.h
  *
  *  Created on: 7 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef MAPPING_H
@@ -44,7 +44,7 @@ static const GPIO GPIO_CC1260_DATA7 =			(GPIO) {GPIOD, 3, 7, 0};
 static const GPIO GPIO_CC1260_DWAIT =			(GPIO) {GPIOD, 3, 8, 0};
 static const GPIO GPIO_CC1260_DSTART =			(GPIO) {GPIOD, 3, 9, 0};
 static const GPIO GPIO_CC1260_DENABLE =			(GPIO) {GPIOD, 3, 10, 0};
-static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOD, 3, 14, 0};
+static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOD, 3, 14, 2};	// AF2 = TIM4_CH3.
 static const GPIO GPIO_CC1260_UPP_DIR =			(GPIO) {GPIOG, 6, 11, 0};
 // Screen GPIOs.
 static const GPIO GPIO_SCREEN_IO0 =				(GPIO) {GPIOE, 4, 9, 0};
@@ -80,5 +80,7 @@ static const GPIO GPIO_LED_BLUE =				(GPIO) {GPIOB, 1, 2, 0};
 // Buttons.
 static const GPIO GPIO_BP2 =					(GPIO) {GPIOF, 5, 11, 0};
 static const GPIO GPIO_BP3 =					(GPIO) {GPIOF, 5, 12, 0};
+// Clock output.
+static const GPIO GPIO_MCO2 =					(GPIO) {GPIOC, 2, 9, 0};	// AF0 = MCO2.
 
 #endif /* MAPPING_H */

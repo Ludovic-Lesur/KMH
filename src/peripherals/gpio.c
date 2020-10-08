@@ -9,6 +9,7 @@
 
 #include "gpio_reg.h"
 #include "mapping.h"
+#include "rcc.h"
 #include "rcc_reg.h"
 
 /*** GPIO local macros ***/
@@ -219,11 +220,12 @@ void GPIO_Configure(const GPIO* gpio, GPIO_Mode mode, GPIO_OutputType output_typ
  * @return: None.
  */
 void GPIO_Init(void) {
-
-	/* Enable all GPIOx clocks */
+	// Enable all GPIOx clocks.
 	RCC -> AHB1ENR |= 0x000007FF; // GPIOxEN='1'.
-
-	/* Others GPIOs are configured in their corresponding peripheral or applicative file */
+#ifdef RCC_USE_MCO
+	GPIO_Configure(&GPIO_MCO2, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_HIGH, GPIO_PULL_NONE);
+#endif
+	// Others GPIOs are configured in their corresponding peripheral or applicative file.
 }
 
 /* SET THE STATE OF A GPIO.

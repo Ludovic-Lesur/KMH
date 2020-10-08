@@ -2,7 +2,7 @@
  * cc1260_reg.h
  *
  *  Created on: 22 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef CC1260_REG_H

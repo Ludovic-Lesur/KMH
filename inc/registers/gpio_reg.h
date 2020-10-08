@@ -2,7 +2,7 @@
  * gpio_reg.h
  *
  *  Created on: 6 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #ifndef GPIO_REG_H

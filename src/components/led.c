@@ -17,13 +17,11 @@
  * @return:	None.
  */
 void LED_Init(void) {
-
-	/* Configure LED pins as output */
+	// Configure LED pins as output.
 	GPIO_Configure(&GPIO_LED_RED, GPIO_MODE_OUTPUT, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_LED_GREEN, GPIO_MODE_OUTPUT, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_LED_BLUE, GPIO_MODE_OUTPUT, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-
-	/* Turn LED off by default */
+	// Turn LED off by default.
 	LED_SetColor(LED_OFF);
 }
 
@@ -32,8 +30,7 @@ void LED_Init(void) {
  * @return:				None.
  */
 void LED_SetColor(LED_Color led_color) {
-
-	/* Update pins */
+	// Update pins.
 	switch (led_color) {
 	case LED_OFF:
 		GPIO_Write(&GPIO_LED_RED, 1);
