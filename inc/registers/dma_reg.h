@@ -25,7 +25,7 @@ typedef struct {
 	volatile unsigned int S1NDTR;	// DMA stream 1 number of data register.
 	volatile unsigned int S1PAR;	// DMA stream 1 peripheral address register.
 	volatile unsigned int S1M0AR;	// DMA stream 1 memory 0 address register.
-	volatile unsigned int S10M1AR;	// DMA stream 1 memory 1 address register.
+	volatile unsigned int S1M1AR;	// DMA stream 1 memory 1 address register.
 	volatile unsigned int S1FCR	;	// DMA stream 1 FIFO control register.
 	volatile unsigned int S2CR;		// DMA stream 2 configuration register.
 	volatile unsigned int S2NDTR;	// DMA stream 2 number of data register.

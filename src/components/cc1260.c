@@ -195,11 +195,12 @@ void CC1260_StartRxIq(unsigned int buffer1_addr, unsigned int buffer2_addr, unsi
 	CC1260_WriteRegister(CC1260_REG_UPP_CTRL1, 0x55);
 	CC1260_WriteRegister(CC1260_REG_UPP_CTRL0, 0x55);
 	// Configure DMA for RX operation (GPIO to buffer).
-	DMA1_SetPeripheralAddress((unsigned int) &(GPIOD -> IDR));
-	DMA1_SetMemoryAddress(buffer1_addr, buffer2_addr, buffers_size);
-	DMA1_SetDirection(DMA_DIRECTION_PERIPHERAL_TO_MEMORY);
+	DMA2_STR1_SetPeripheralAddress((unsigned int) &(GPIOD -> IDR));
+	DMA2_STR1_SetMemoryAddress(buffer1_addr, buffer2_addr, buffers_size);
+	DMA2_STR1_SetDirection(DMA_DIRECTION_PERIPHERAL_TO_MEMORY);
 	// Start DMA stream.
-	//DMA1_Start();
+	DMA2_STR1_Start();
+	TIM1_Start();
 	// Start RX.
 	CC1260_SendCommand(CC1260_COMMAND_SRX);
 }

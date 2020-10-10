@@ -16,7 +16,7 @@
 
 /*** SPI local macros ***/
 
-#define SPI_ACCESS_TIMEOUT_SECONDS	3
+#define SPI_ACCESS_TIMEOUT_COUNT	10000
 
 /*** SPI functions ***/
 
@@ -115,10 +115,11 @@ unsigned char SPI3_WriteByte(unsigned char tx_data) {
 	// Send data.
 	*((volatile unsigned char*) &(SPI3 -> DR)) = tx_data;
 	// Wait for transmission to complete.
-	unsigned int loop_start_time = TIM2_GetSeconds();
+	unsigned int loop_count = 0;
 	while ((((SPI3 -> SR) & (0b1 << 1)) == 0) || (((SPI3 -> SR) & (0b1 << 7)) != 0)) {
 		// Wait for TXE='1' and BSY='0' or timeout.
-		if (TIM2_GetSeconds() > (loop_start_time + SPI_ACCESS_TIMEOUT_SECONDS)) return 0;
+		loop_count++;
+		if (loop_count > SPI_ACCESS_TIMEOUT_COUNT) return 0;
 	}
 	return 1;
 }
@@ -129,26 +130,29 @@ unsigned char SPI3_WriteByte(unsigned char tx_data) {
  */
 unsigned char SPI3_ReadByte(unsigned char tx_data, unsigned char* rx_data) {
 	// Dummy read to DR to clear RXNE flag.
-	unsigned int loop_start_time = TIM2_GetSeconds();
+	unsigned int loop_count = 0;
 	while (((SPI3 -> SR) & (0b1 << 0)) != 0) {
 		(*rx_data) = (SPI3 -> DR);
 		// Wait for RXNE='0' or timeout.
-		if (TIM2_GetSeconds() > (loop_start_time + SPI_ACCESS_TIMEOUT_SECONDS)) return 0;
+		loop_count++;
+		if (loop_count > SPI_ACCESS_TIMEOUT_COUNT) return 0;
 	}
 	// Send dummy data on MOSI to generate clock.
 	*((volatile unsigned char*) &(SPI3 -> DR)) = tx_data;
 	// Wait for incoming data.
-	loop_start_time = TIM2_GetSeconds();
+	loop_count = 0;
 	while (((SPI3 -> SR) & (0b1 << 0)) == 0) {
 		// Wait for RXNE='1' or timeout.
-		if (TIM2_GetSeconds() > (loop_start_time + SPI_ACCESS_TIMEOUT_SECONDS)) return 0;
+		loop_count++;
+		if (loop_count > SPI_ACCESS_TIMEOUT_COUNT) return 0;
 	}
 	(*rx_data) = *((volatile unsigned char*) &(SPI3 -> DR));
 	// Wait for reception to complete.
-	loop_start_time = TIM2_GetSeconds();
+	loop_count = 0;
 	while ((((SPI3 -> SR) & (0b1 << 0)) != 0) || (((SPI3 -> SR) & (0b1 << 7)) != 0)) {
 		// Wait for RXNE='0' and BSY='0' or timeout.
-		if (TIM2_GetSeconds() > (loop_start_time + SPI_ACCESS_TIMEOUT_SECONDS)) return 0;
+		loop_count++;
+		if (loop_count > SPI_ACCESS_TIMEOUT_COUNT) return 0;
 	}
 	return 1;
 }

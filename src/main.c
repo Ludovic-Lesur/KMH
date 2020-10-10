@@ -36,30 +36,22 @@ int main(void) {
 	// Init clock.
 	RCC_Init();
 	RCC_SwitchToPllclk(0);
-	// Init timers for timeout and delay.
-	TIM2_Init();
-	TIM3_Init();
-	TIM2_Start();
-	TIM3_Start();
-	LPTIM1_Init();
-	// Init peripherals.
+	// Init GPIOs.
 	GPIO_Init();
+	// Init peripherals.
+	LPTIM1_Init();
+	TIM1_Init();
 	SPI3_Init();
-	DMA1_Init();
+	DMA2_STR1_Init();
 	DAC_Init();
 	USART1_Init();
 	// Init components.
 	LED_Init();
 	CC1260_Init();
 	// RX I/Q test.
-	unsigned short iq_buf1[KMH_IQ_BUFFER_SIZE];
-	unsigned short iq_buf2[KMH_IQ_BUFFER_SIZE];
-	unsigned int byte_idx = 0;
-	for (byte_idx=0 ; byte_idx<KMH_IQ_BUFFER_SIZE ; byte_idx++) iq_buf1[byte_idx] = 0;
-	for (byte_idx=0 ; byte_idx<KMH_IQ_BUFFER_SIZE ; byte_idx++) iq_buf2[byte_idx] = 0;
+	unsigned short iq_buf1[KMH_IQ_BUFFER_SIZE] = {0x00};
+	unsigned short iq_buf2[KMH_IQ_BUFFER_SIZE] = {0x00};
 	// Turn RF front-end on.
-	GPIO_Configure(&GPIO_SCREEN_IO0, GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_HIGH, GPIO_PULL_NONE);
-	TIM4_Init();
 	SPI3_PowerOn();
 	CC1260_Unreset();
 	CC1260_SetConfig(CC1260_OPTIMUM_SETTING_RX, CC1260_OPTIMUM_SETTING_RX_SIZE);
@@ -67,6 +59,8 @@ int main(void) {
 	CC1260_SetRxSampleRate(KMH_RX_SAMPLE_RATE_BPS);
 	CC1260_StartRxIq((unsigned int) &iq_buf1, (unsigned int) &iq_buf2, KMH_IQ_BUFFER_SIZE);
 	// Main loop.
-	while(1);
+	while(1) {
+		__asm volatile ("wfi");
+	}
 	return (0);
 }

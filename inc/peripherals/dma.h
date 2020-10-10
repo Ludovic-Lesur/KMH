@@ -18,11 +18,11 @@ typedef enum {
 
 /*** DMA functions ***/
 
-void DMA1_Init(void);
-void DMA1_SetPeripheralAddress(unsigned int periph_addr);
-void DMA1_SetMemoryAddress(unsigned int buffer1_addr, unsigned int buffer2_addr, unsigned int buffers_size);
-void DMA1_SetDirection(DMA_Direction dma_direction);
-void DMA1_Start(void);
-void DMA1_Stop(void);
+void DMA2_STR1_Init(void);
+void DMA2_STR1_SetPeripheralAddress(unsigned int periph_addr);
+void DMA2_STR1_SetMemoryAddress(unsigned int buffer1_addr, unsigned int buffer2_addr, unsigned int buffers_size);
+void DMA2_STR1_SetDirection(DMA_Direction dma_direction);
+void DMA2_STR1_Start(void);
+void DMA2_STR1_Stop(void);
 
 #endif /* DMA_H */

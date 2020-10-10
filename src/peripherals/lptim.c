@@ -14,7 +14,7 @@
 
 /*** LPTIM local macros ***/
 
-#define LPTIM_TIMEOUT_SECONDS	3
+#define LPTIM_TIMEOUT_COUNT		10000
 
 /*** LPTIM functions ***/
 
@@ -32,10 +32,11 @@ void LPTIM1_Init(void) {
 	LPTIM1 -> CNT &= 0xFFFF0000; // Reset counter.
 	LPTIM1 -> CR |= (0b1 << 0); // Enable LPTIM1 (ENABLE='1'), needed to write ARR.
 	LPTIM1 -> ARR = RCC_GetPclk1Khz(); // Overflow period = 1ms.
-	unsigned int loop_start_time = TIM2_GetSeconds();
+	unsigned int loop_count = 0;
 	while (((LPTIM1 -> ISR) & (0b1 << 4)) == 0) {
 		// Wait for ARROK='1' or timeout.
-		if (TIM2_GetSeconds() > (loop_start_time + LPTIM_TIMEOUT_SECONDS)) break;
+		loop_count++;
+		if (loop_count > LPTIM_TIMEOUT_COUNT) break;
 	}
 	// Clear all flags.
 	LPTIM1 -> ICR |= (0b1111111 << 0);
@@ -72,15 +73,16 @@ void LPTIM1_DelayMilliseconds(unsigned int delay_ms) {
 	LPTIM1 -> CR |= (0b1 << 0); // Enable LPTIM1 (ENABLE='1').
 	// Make as many overflows as required.
 	unsigned int ms_count = 0;
-	unsigned int loop_start_time = 0;
+	unsigned int loop_count = 0;
 	unsigned char lptim_default = 0;
 	for (ms_count=0 ; ms_count<delay_ms ; ms_count++) {
 		// Start counter.
-		loop_start_time = TIM2_GetSeconds();
+		loop_count = 0;
 		LPTIM1 -> CNT &= 0xFFFF0000;
 		LPTIM1 -> CR |= (0b1 << 1); // SNGSTRT='1'.
 		while (((LPTIM1 -> ISR) & (0b1 << 1)) == 0) {
-			if (TIM2_GetSeconds() > (loop_start_time + LPTIM_TIMEOUT_SECONDS)) {
+			loop_count++;
+			if (loop_count > LPTIM_TIMEOUT_COUNT) {
 				lptim_default = 1;
 				break;
 			}

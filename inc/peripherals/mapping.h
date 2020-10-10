@@ -44,7 +44,8 @@ static const GPIO GPIO_CC1260_DATA7 =			(GPIO) {GPIOD, 3, 7, 0};
 static const GPIO GPIO_CC1260_DWAIT =			(GPIO) {GPIOD, 3, 8, 0};
 static const GPIO GPIO_CC1260_DSTART =			(GPIO) {GPIOD, 3, 9, 0};
 static const GPIO GPIO_CC1260_DENABLE =			(GPIO) {GPIOD, 3, 10, 0};
-static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOD, 3, 14, 2};	// AF2 = TIM4_CH3.
+//static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOD, 3, 14, 2};	// AF2 = TIM4_CH3.
+static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOA, 0, 8, 1};	// AF1 = TIM1_CH1.
 static const GPIO GPIO_CC1260_UPP_DIR =			(GPIO) {GPIOG, 6, 11, 0};
 // Screen GPIOs.
 static const GPIO GPIO_SCREEN_IO0 =				(GPIO) {GPIOE, 4, 9, 0};
