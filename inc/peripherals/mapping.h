@@ -33,6 +33,7 @@ static const GPIO GPIO_CC1260_GPIO0 =			(GPIO) {GPIOA, 0, 12, 0};
 static const GPIO GPIO_CC1260_GPIO2 =			(GPIO) {GPIOG, 6, 12, 0};
 static const GPIO GPIO_CC1260_GPIO3 =			(GPIO) {GPIOG, 6, 13, 0};
 // CC1260 uPP interface.
+#define GPIO_CC1260_UPP_PORT					GPIOD
 static const GPIO GPIO_CC1260_DATA0 =			(GPIO) {GPIOD, 3, 0, 0};
 static const GPIO GPIO_CC1260_DATA1 =			(GPIO) {GPIOD, 3, 1, 0};
 static const GPIO GPIO_CC1260_DATA2 =			(GPIO) {GPIOD, 3, 2, 0};
@@ -44,7 +45,7 @@ static const GPIO GPIO_CC1260_DATA7 =			(GPIO) {GPIOD, 3, 7, 0};
 static const GPIO GPIO_CC1260_DWAIT =			(GPIO) {GPIOD, 3, 8, 0};
 static const GPIO GPIO_CC1260_DSTART =			(GPIO) {GPIOD, 3, 9, 0};
 static const GPIO GPIO_CC1260_DENABLE =			(GPIO) {GPIOD, 3, 10, 0};
-//static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOD, 3, 14, 2};	// AF2 = TIM4_CH3.
+//static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOD, 3, 14, 2};	// Initial hardware.
 static const GPIO GPIO_CC1260_DCLK =			(GPIO) {GPIOA, 0, 8, 1};	// AF1 = TIM1_CH1.
 static const GPIO GPIO_CC1260_UPP_DIR =			(GPIO) {GPIOG, 6, 11, 0};
 // Screen GPIOs.

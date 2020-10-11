@@ -11,6 +11,7 @@
 /*** DAC functions ***/
 
 void DAC_Init(void);
-void DAC_SetVoltageMv(unsigned char channel, unsigned int voltage_mv);
+void DAC_Start(void);
+void DAC_Stop(void);
 
 #endif /* PERIPHERALS_DAC_H_ */

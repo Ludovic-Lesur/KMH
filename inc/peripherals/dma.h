@@ -18,6 +18,15 @@ typedef enum {
 
 /*** DMA functions ***/
 
+// DMA1 performs buffer to DAC tranfer.
+void DMA1_STR5_Init(void);
+void DMA1_STR5_SetPeripheralAddress(unsigned int periph_addr);
+void DMA1_STR5_SetMemoryAddress(unsigned int buf1_addr, unsigned int buf2_addr, unsigned int buffers_size);
+void DMA1_STR5_SetDirection(DMA_Direction dma_direction);
+void DMA1_STR5_Start(void);
+void DMA1_STR5_Stop(void);
+
+// DMA2 performs GPIOs to buffer transfer.
 void DMA2_STR1_Init(void);
 void DMA2_STR1_SetPeripheralAddress(unsigned int periph_addr);
 void DMA2_STR1_SetMemoryAddress(unsigned int buffer1_addr, unsigned int buffer2_addr, unsigned int buffers_size);

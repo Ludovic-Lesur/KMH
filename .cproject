@@ -112,6 +112,8 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/KMH/inc/peripherals}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/KMH/inc/components}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/KMH/inc/applicative}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -142,6 +144,8 @@
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/KMH/inc/peripherals}&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/KMH/inc/components}&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;${workspace_loc:/KMH/inc/applicative}&quot;"/>
                                     								
                                 </option>
                                 								
@@ -281,7 +285,15 @@
     	
     <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
     	
-    <storageModule moduleId="refreshScope"/>
+    <storageModule moduleId="refreshScope" versionNumber="2">
+        		
+        <configuration configurationName="HW1_0">
+            			
+            <resource resourceType="PROJECT" workspacePath="/KMH"/>
+            		
+        </configuration>
+        	
+    </storageModule>
     	
     <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
     

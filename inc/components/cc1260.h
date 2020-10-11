@@ -20,6 +20,6 @@ void CC1260_SetConfig(const CC1260_RegisterSetting* cc1260_config, unsigned char
 void CC1260_SetFrequency(unsigned int freq_hz);
 // RX.
 void CC1260_SetRxSampleRate(unsigned int rx_sample_rate_hz);
-void CC1260_StartRxIq(unsigned int buffer1_addr, unsigned int buffer2_addr, unsigned int buffers_size);
+void CC1260_StartRxIq(void);
 
 #endif /* CC1260_H */
