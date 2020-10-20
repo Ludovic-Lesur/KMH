@@ -18,12 +18,15 @@
 
 /*** CC1260 local macros ***/
 
-#define CC1260_XOSC_FREQUENCY_HZ	38400000
-#define CC1260_LO_DIVIDER			4
-#define CC1260_FIR_DECIMATION_MIN	2
-#define CC1260_FIR_DECIMATION_MAX	4
-#define CC1260_CIC_DECIMATION_MIN	4
-#define CC1260_CIC_DECIMATION_MAX	64
+#define CC1260_XOSC_FREQUENCY_HZ		38400000
+#define CC1260_LO_DIVIDER				4
+#define CC1260_FIR_DECIMATION_MIN		2
+#define CC1260_FIR_DECIMATION_MAX		4
+#define CC1260_CIC_DECIMATION_MIN		4
+#define CC1260_CIC_DECIMATION_MAX		64
+#define CC1260_GAIN_TABLE_INDEX_MAX		0x1B
+#define CC1260_GAIN_TABLE_STEP_DB		3
+#define CC1260_LNA_GAIN_MAX_ATTEN_DB	82
 
 /*** CC1260 local functions ***/
 
@@ -167,6 +170,40 @@ void CC1260_SetRxSampleRate(unsigned int rx_sample_rate_hz) {
 	ferx_decimation_reg_value |= (cic_decimation & 0x7F);
 	CC1260_WriteRegister(CC1260_REG_FERX_DECIMATION, ferx_decimation_reg_value);
 	// Note: the resulting uPP clock frequency is twice the sample rate (DDR).
+}
+
+/* SET RX ANTI-ALIASING FILTER BANDWIDTH.
+ * @param rx_ana_bw:	Filter bandwidth (use enum defined in cc1260.h).
+ * @return:				None.
+ */
+void CC1260_SetRxAnalogFilter(CC1260_RxAnalogFilterBandwidth rx_ana_bw) {
+	// Read register.
+	unsigned char ifamp_reg_value = 0;
+	CC1260_ReadRegister(CC1260_REG_IFAMP, &ifamp_reg_value);
+	// Program register.
+	ifamp_reg_value &= 0xF3;
+	ifamp_reg_value |= ((rx_ana_bw << 2) & 0x0C);
+	CC1260_WriteRegister(CC1260_REG_IFAMP, ifamp_reg_value);
+}
+
+/* SET RX LNA GAIN.
+ * @param atten_db:	Desired attenuation in relation to the max LNA gain (in dB).
+ */
+void CC1260_SetLnaAtten(unsigned char atten_db) {
+	// Clamp parameter.
+	unsigned char local_atten_db = atten_db;
+	if (local_atten_db > CC1260_LNA_GAIN_MAX_ATTEN_DB) {
+		local_atten_db = CC1260_LNA_GAIN_MAX_ATTEN_DB;
+	}
+	// Compute index.
+	unsigned char gain_table_index = CC1260_GAIN_TABLE_INDEX_MAX - (local_atten_db / CC1260_GAIN_TABLE_STEP_DB);
+	// Read register.
+	unsigned char rfe_gain_table_reg_value = 0;
+	CC1260_ReadRegister(CC1260_REG_RFE_GAIN_TABLE_INDEX, &rfe_gain_table_reg_value);
+	// Program register.
+	rfe_gain_table_reg_value &= 0xE0;
+	rfe_gain_table_reg_value |= (gain_table_index & 0x1F);
+	CC1260_WriteRegister(CC1260_REG_RFE_GAIN_TABLE_INDEX, rfe_gain_table_reg_value);
 }
 
 /* START RX I/Q OPERATION.
