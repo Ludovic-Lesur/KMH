@@ -35,7 +35,7 @@ static RCC_Context rcc_ctx;
  * @param:	None.
  * @return:	None.
  */
-void RCC_Delay(void) {
+static void RCC_Delay(void) {
 	unsigned int j = 0;
 	unsigned int loop_count = 100000; // Value for 100ms.
 	for (j=0 ; j<loop_count ; j++) {

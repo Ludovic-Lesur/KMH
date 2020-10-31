@@ -68,7 +68,7 @@ void USART1_IRQHandler(void) {
  * @param newbyte:		Byte to store in buffer.
  * @return:				None.
  */
-void USART1_FillTxBuffer(unsigned char new_tx_byte) {
+static void USART1_FillTxBuffer(unsigned char new_tx_byte) {
 	(usart1_ctx.tx_buf)[usart1_ctx.tx_write_idx] = new_tx_byte;
 	// Increment index and manage roll-over.
 	usart1_ctx.tx_write_idx++;
@@ -81,7 +81,7 @@ void USART1_FillTxBuffer(unsigned char new_tx_byte) {
  * @param n:	The word to converts.
  * @return:		The results of conversion.
  */
-char USARTx_HexaToAscii(unsigned char hexa_value) {
+static char USARTx_HexaToAscii(unsigned char hexa_value) {
 	char hexa_ascii = 0;
 	if (hexa_value <= 15) {
 		hexa_ascii = (hexa_value <= 9 ? (char) (hexa_value + '0') : (char) (hexa_value + ('A' - 10)));
@@ -93,7 +93,7 @@ char USARTx_HexaToAscii(unsigned char hexa_value) {
  * @param power:	The desired power.
  * @return result:	Result of computation.
  */
-unsigned int USARTx_Pow10(unsigned char power) {
+static unsigned int USARTx_Pow10(unsigned char power) {
 	unsigned int result = 0;
 	unsigned int pow10_buf[10] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 	if (power <= 9) {
@@ -101,6 +101,8 @@ unsigned int USARTx_Pow10(unsigned char power) {
 	}
 	return result;
 }
+
+/*** USART functions ***/
 
 /* CONFIGURE USART PERIPHERAL.
  * @param:	None.
