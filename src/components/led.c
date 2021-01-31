@@ -2,7 +2,7 @@
  * led.c
  *
  *  Created on: 22 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "led.h"

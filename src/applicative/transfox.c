@@ -46,7 +46,6 @@ void TRANSFOX_StartAnalogRx(void) {
 	DMA1_STR5_SetDirection(DMA_DIRECTION_MEMORY_TO_PERIPHERAL);
 	// Start DMA streams.
 	DAC_Start();
-	TIM8_Start();
 	DMA1_STR5_Start();
 	DMA2_STR1_Start();
 	TIM1_Start();

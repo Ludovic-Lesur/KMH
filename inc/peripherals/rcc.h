@@ -10,6 +10,7 @@
 
 /*** RCC macros ***/
 
+#define RCC_LSI_FREQUENCY_HZ	38000
 //#define RCC_USE_MCO
 
 /*** RCC functions ***/

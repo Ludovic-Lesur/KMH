@@ -8,8 +8,6 @@
 #ifndef NVIC_H
 #define NVIC_H
 
-#include "nvic_reg.h"
-
 /*** NVIC interrupts vector ***/
 
 typedef enum {
@@ -111,12 +109,18 @@ typedef enum {
 	NVIC_IT_I2C4_EV = 95,
 	NVIC_IT_I2C4_ER = 96,
 	NVIC_IT_SPDIFRX = 97
-} InterruptVector;
+} NVIC_InterruptVector;
+
+typedef enum {
+	NVIC_PRIORITY_MAX = 0,
+	NVIC_PRIORITY_MIN = 7
+} NVIC_Priority;
 
 /*** NVIC functions ***/
 
-void NVIC_EnableInterrupt(InterruptVector it_num);
-void NVIC_DisableInterrupt(InterruptVector it_num);
-void NVIC_SetPriority(InterruptVector it_num, unsigned char priority);
+void NVIC_Init(void);
+void NVIC_EnableInterrupt(NVIC_InterruptVector it_num);
+void NVIC_DisableInterrupt(NVIC_InterruptVector it_num);
+void NVIC_SetPriority(NVIC_InterruptVector it_num, unsigned char priority);
 
 #endif /* NVIC_H */

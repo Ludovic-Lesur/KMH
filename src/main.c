@@ -13,6 +13,7 @@
 #include "gpio.h"
 #include "lptim.h"
 #include "mapping.h"
+#include "nvic.h"
 #include "rcc.h"
 #include "spi.h"
 #include "tim.h"
@@ -28,8 +29,11 @@
  * @return: 0.
  */
 int main(void) {
+	// Init NVIC.
+	NVIC_Init();
 	// Init clock.
 	RCC_Init();
+	RCC_EnableLsi();
 	RCC_SwitchToPllclk(0);
 	// Init GPIOs.
 	GPIO_Init();
@@ -37,7 +41,6 @@ int main(void) {
 	// Init peripherals.
 	LPTIM1_Init();
 	TIM1_Init();
-	TIM8_Init();
 	SPI3_Init();
 	DMA1_STR5_Init();
 	DMA2_STR1_Init();
@@ -50,7 +53,12 @@ int main(void) {
 	TRANSFOX_StartAnalogRx();
 	// Main loop.
 	while(1) {
+		// Enter sleep mode.
 		__asm volatile ("wfi");
+		// Print I/Q data (mapped on PORTD).
+		//USART1_SendValue(((GPIOD -> IDR) & 0xFF), USART_FORMAT_BINARY, 1);
+		//USART1_SendValue('\n', USART_FORMAT_ASCII, 0);
+		//LPTIM1_DelayMilliseconds(200);
 	}
 	return (0);
 }

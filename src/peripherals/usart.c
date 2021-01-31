@@ -2,7 +2,7 @@
  * usart.c
  *
  *  Created on: 7 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "usart.h"
@@ -62,6 +62,10 @@ void USART1_IRQHandler(void) {
 		// Get and store new byte into RX buffer.
 		unsigned char rx_byte = USART1 -> RDR;
 	}
+	if (((USART1 -> ISR) & (0b1 << 3)) != 0) { // ORE='1'.
+		// Clear flag.
+		USART1 -> ICR |= (0b1 << 3);
+	}
 }
 
 /* APPEND A NEW BYTE TO TX BUFFER AND MANAGE INDEX ROLL-OVER.
@@ -115,24 +119,19 @@ void USART1_Init(void) {
 	usart1_ctx.tx_read_idx = 0;
 	usart1_ctx.tx_write_idx = 0;
 	// Enable peripheral clock.
-	RCC -> APB2ENR |= (0b1 << 4);
+	RCC -> APB2ENR |= (0b1 << 4); // USART1EN='1'.
 	// Configure TX and RX GPIOs.
 	GPIO_Configure(&GPIO_USART1_TX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 	GPIO_Configure(&GPIO_USART1_RX, GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-	// 1 stop bit, 8 data bits, oversampling by 16.
-	USART1 -> CR1 = 0; // M='00' and OVER8='0'.
-	USART1 -> CR2 = 0;
-	USART1 -> CR3 = 0;
-	// Baud rate.
+	// Configure peripheral.
+	USART2 -> CR3 |= (0b1 << 12); // No overrun detection (OVRDIS='1').
 	USART1 -> BRR = (RCC_GetPclk2Khz() * 1000) / (USART_BAUD_RATE); // USART1 is clocked by PCLK2.
 	// Enable transmitter and receiver.
-	USART1 -> CR1 |= (0b1 << 3); // TE='1'.
-	USART1 -> CR1 |= (0b1 << 2); // RE='1'.
-	// Enable interrupts.
-	USART1 -> CR1 |= (0b1 << 5); // RXNEIE='1'.
+	USART1 -> CR1 |= (0b1 << 5) | (0b11 << 2); // TE='1', RE='1' and RXNEIE='1'.
+	// Set interrupt priority.
+	NVIC_SetPriority(NVIC_IT_USART1, 6);
 	// Enable peripheral.
 	USART1 -> CR1 |= (0b1 << 0); // UE='1'.
-	NVIC_EnableInterrupt(NVIC_IT_USART1);
 }
 
 /* SEND A VALUE THROUGH USART.

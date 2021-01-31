@@ -2,21 +2,30 @@
  * flash.c
  *
  *  Created on: 22 dec. 2019
- *      Author: Ludovic
+ *      Author: Ludo
  */
 
 #include "flash.h"
 
 #include "flash_reg.h"
 
+/*** FLASH local macros ***/
+
+#define FLASH_TIMEOUT_COUNT		10000
+
 /*** FLASH functions ***/
 
 /* SET FLASH LATENCY.
- * @param:	None.
- * @return:	None.
+ * @param wait_states:	Number of wait states.
+ * @return:				None.
  */
-void FLASH_SetLatency(unsigned wait_states) {
-	// Set latency.
-	FLASH -> ACR &= ~(0b1111 << 0);
-	FLASH -> ACR |= (wait_states << 0);
+void FLASH_SetLatency(unsigned char wait_states) {
+	// Configure number of wait states.
+	FLASH -> ACR &= ~(0b1111 << 0); // Reset bits.
+	FLASH -> ACR |= ((wait_states & 0b1111) << 0); // Set latency.
+	// Wait until configuration is done.
+	unsigned int count = 0;
+	while ((((FLASH -> ACR) & (0b1111 << 0)) != ((wait_states & 0b1111) << 0)) && (count < FLASH_TIMEOUT_COUNT)) {
+		count++;
+	}
 }
